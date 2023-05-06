@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 const { async } = require("react-input-emoji");
 const bodyparser = require('body-parser')
+const { cloudinary } = require('../cloudinary/index')
 
 
 // Add customer
@@ -30,8 +31,8 @@ const addUser = async (req, res) => {
             collectionEndDate
 
         });
-        newUser.IdProof = req.files.map((f) => ({ url: f.path, filename: f.filename }));
-        newUser.Photo = req.files.map((f) => ({ url: f.path, filename: f.filename }));
+        newUser.IdProof = req.files.map((f) => ({ url: f.path, file: f.file }));
+        newUser.Photo = req.files.map((f) => ({ url: f.path, file: f.file }));
 
         await newUser.save();
         res.status(201).json(newUser); // Return the newly created user object in the response

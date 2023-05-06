@@ -56,16 +56,16 @@ const customerSchema = mongoose.Schema({
         // required: true,
 
     },
-    IdProof:  {
+    IdProof:  [{
                 url: String,
-                filename: String,
+                file: String,
 
-            },
-    Photo: {
+            }],
+    Photo: [{
         url: String,
-        filename: String,
+        file: String,
 
-    },
+    }],
     
     Pending:[{
         type:String
