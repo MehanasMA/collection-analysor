@@ -77,6 +77,29 @@ const allUsers = async (req, res) => {
     }
 };
 
+
+// Collection List
+
+const collectionList=async(req,res)=>{
+   const user=await User.find()
+   
+   const {collectionDate,collectionEndDate,collectionPeriod}=user
+    const date = require('date-and-time')
+
+    // Creating object of current date and time 
+    // by using Date() 
+    const now = new Date();
+
+    // Adding Days to the existing date and time
+    // by using date.addDays() method
+    const value = date.addDays(now, 24);
+
+    // Display the result
+    console.log("updated date and time : " + value)
+
+}
+
+
 // delete customer
 
 const deleteUser = async (req, res) => {
@@ -129,4 +152,4 @@ const pay = async (req, res) => {
 
 }
 
-module.exports = { addUser, getUser, allUsers, deleteUser, updateUser, pay }
+module.exports = { addUser, getUser, allUsers, deleteUser, updateUser, pay,collectionList }
