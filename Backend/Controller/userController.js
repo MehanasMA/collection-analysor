@@ -31,12 +31,9 @@ const addUser = async (req, res) => {
             collectionEndDate
 
         });
-        newUser.IdProof = req.files.map((f) => ({ url: f.path, file: f.file }));
-        newUser.Photo = req.files.map((f) => ({ url: f.path, file: f.file }));
-
+    
         await newUser.save();
         res.status(201).json(newUser); // Return the newly created user object in the response
-        // res.json({ status: 'ok' })
         console.log(newUser,"saved");
 
     }

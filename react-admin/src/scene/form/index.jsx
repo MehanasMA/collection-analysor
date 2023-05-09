@@ -109,18 +109,61 @@ const Form = () => {
 	const [ Date, setDate ] = useState(); // add state to  collection date
 	const [endDate,setEndDate]=useState(); // add state to  collection date
 
-	const handleFormSubmit = (values) => {
+	const handleFormSubmit = async(values) => {
+const {Photo}= values
 
-    dispatch(addUser(values))
-          
+
+		
 		console.log('onn work avbvvvvv mone', values);
 		// values.preventDefault();
-		const form = new FormData();
-		form.append('file', values);
-		form.append('filee', values);
-		console.log('onn work avbvvvvv mone', form);
-	};
+		const data = new FormData();
+		data.append('file', Photo);
+		data.append("upload_preset","wj1inqd");
+		data.append("cloud_name","dzeddutlz")
 
+	
+		
+		await fetch(`https://api.cloudinary.com/v1_1/dqsdim3vv/image/upload`, {
+      method: "POST",
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data, "data");
+        values.Photo = data.url;
+        
+        console.log(values, "Photodeetall");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    
+      const IdData = new FormData();
+
+      IdData.append("file", IdProof);
+      IdData.append("upload_preset", "evqnxnlb");
+      IdData.append("cloud_name", "dqsdim3vv");
+      await fetch(`https://api.cloudinary.com/v1_1/dqsdim3vv/image/upload`, {
+        method: "POST",
+        body: IdData,
+      })
+        .then((res) => res.json())
+        .then((IdData) => {
+          console.log(IdData, "Idddddddata");
+          values.IdProof = IdData.url;
+          
+          console.log(values, "Photodeetaleeel");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      
+
+      
+      console.log("onn work ", values);
+      dispatch(addUser(values));
+  };
 	//  const handleDate = (evnt) => {
 
 	// const date = new Date("2000-10-1");
