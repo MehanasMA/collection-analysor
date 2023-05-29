@@ -1,10 +1,7 @@
 const User = require("../Models/customerModel")
-const bcrypt = require('bcrypt')
 const mongoose = require("mongoose");
-const jwt = require('jsonwebtoken');
-const { async } = require("react-input-emoji");
 const bodyparser = require('body-parser')
-const { cloudinary } = require('../cloudinary/index')
+const date = require('date-and-time')
 
 
 // Add customer
@@ -12,8 +9,11 @@ const { cloudinary } = require('../cloudinary/index')
 const addUser = async (req, res) => {
     console.log('qqqqqq');
     const { Name, MobileNo, Address, GivenAmount, TotalAmount, CollectionAmount, IdProof, Photo, InterestAmount,
-        InterestPercentage, collectionDate,collectionPeriod,collectionEndDate } = req.body;
-       console.log(req.body);
+        InterestPercentage, collectionDate, collectionPeriod, collectionEndDate } = req.body;
+        console.log(typeof IdProof);
+    console.log(typeof Photo);
+
+    console.log(req.body);
     try {
         const newUser = new User({
             Name,
@@ -31,10 +31,10 @@ const addUser = async (req, res) => {
             collectionEndDate
 
         });
-    
+
         await newUser.save();
         res.status(201).json(newUser); // Return the newly created user object in the response
-        console.log(newUser,"saved");
+        console.log(newUser, "saved");
 
     }
     catch (error) {
@@ -78,26 +78,109 @@ const allUsers = async (req, res) => {
 };
 
 
+
+
 // Collection List
 
-const collectionList=async(req,res)=>{
-   const user=await User.find()
-   
-   const {collectionDate,collectionEndDate,collectionPeriod}=user
-    const date = require('date-and-time')
+const collectionList = async (req, res) => {
+    try {
+        const users = await User.find();
+        const allWeeks = [];
 
-    // Creating object of current date and time 
-    // by using Date() 
-    const now = new Date();
+        users.forEach((user) => {
+            const { collectionDate, collectionEndDate, id, TotalAmount, CollectionAmount } = user;
+            console.log(id, "uuuu");
+            console.log("amount", TotalAmount);
 
-    // Adding Days to the existing date and time
-    // by using date.addDays() method
-    const value = date.addDays(now, 24);
+            const updatedDatesForUser = [];
+            const today = new Date();
 
-    // Display the result
-    console.log("updated date and time : " + value)
+            let mainAmount=TotalAmount;
+            let reducing=mainAmount-CollectionAmount;
+            mainAmount=reducing;
+            console.log("mainAmount",mainAmount);
+
+            for (let date = new Date(collectionDate); date <= new Date(collectionEndDate); date.setDate(date.getDate() + 1)) {
+                if ((date - new Date(collectionDate)) % (7 * 24 * 60 * 60 * 1000) === 0) {
+                    const updatedDate = new Date(date);
+                    updatedDatesForUser.push(updatedDate);
+
+                    if (updatedDate.toDateString() === today.toDateString()) {
+                        console.log(updatedDatesForUser, "upupup");
+                    }
+                }
+            }
+
+            allWeeks.push({
+                userId: id,
+                dates: updatedDatesForUser
+            });
+
+            console.log("updated dates for user:", updatedDatesForUser);
+        });
+
+        // const todayDates = allWeeks.filter((user) => user.dates.some((date) => date.toDateString() === new Date().toDateString())).map((user) => user.userId);
+        const todayUsers = allWeeks.filter((user) => user.dates.some((date) => date.toDateString() === new Date().toDateString()));
+
+        const todayDates = todayUsers.map((user) => ({
+            date: user.dates.find((date) => date.toDateString() === new Date().toDateString()),
+            userId: user.userId
+        }));
+        console.log("todayDates:", todayDates);
+        
+
+        res.status(201).json({
+            allWeeks: allWeeks,
+            todayDates: todayDates
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+// pay
+
+const pay = async (req, res) => {
+    const userId = req.params.id;
+    console.log(userId);
+    const amount = req.body.CollectionAmount
+    const user = await User.findById(userId)
+    console.log(user);
+    const { CollectionAmount } = user
+    console.log("collection", CollectionAmount);
+    console.log("amount", amount);
+    try {
+          const currentDate = new Date();
+        if (amount < CollectionAmount) {
+            const remaining = CollectionAmount - amount
+            console.log(remaining);
+            await User.findByIdAndUpdate(userId, { $push: 
+                // { Pending: remaining, Collected: amount } }
+            {
+                Pending: {
+                    date: currentDate,
+                    amount: remaining
+                },
+                Collected: {
+                    date: currentDate,
+                    amount: amount
+                }
+            }
+         } )
+            res.status(200).json("Amount is pending")
+
+        } else {
+            await User.findByIdAndUpdate(userId, { $push: { Collected: amount } })
+            res.status(200).json("Paid")
+
+        }
+    } catch {
+        console.log(error)
+        res.status(500).json(error)
+    }
 
 }
+
 
 
 // delete customer
@@ -130,26 +213,6 @@ const updateUser = async (req, res) => {
 
 // pay
 
-const pay = async (req, res) => {
-    const userId = req.params.id;
-    const amount = req.body
-
-    try {
-        if (amount < CollectionAmount) {
-            await User.findByIdAndUpdate(userId, { $push: { Pending: userId } })
-            res.status(200).json("Amount is pending")
 
 
-        } else {
-            await User.findByIdAndUpdate(userId, { $push: { Collected: userId } })
-            res.status(200).json("Paid")
-
-        }
-    } catch {
-        console.log(error)
-        res.status(500).json(error)
-    }
-
-}
-
-module.exports = { addUser, getUser, allUsers, deleteUser, updateUser, pay,collectionList }
+module.exports = { addUser, getUser, allUsers, deleteUser, updateUser, pay, collectionList }

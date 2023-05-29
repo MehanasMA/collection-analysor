@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Button, TextField, useMediaQuery } from '@mui/material';
 import { Field, Formik } from 'formik';
 import * as Yup from 'yup';
-// import UseMediaQuery from "@mui/material/useMediaQuery";
 import Header from '../components/Header';
 import { useState } from 'react';
 import { addWeeks } from '@progress/kendo-date-math';
@@ -13,22 +12,16 @@ import { addUser } from '../../redux/Actions/userActions';
 const phoneRegExp = /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
 const userSchema = Yup.object().shape({
-	// Name: Yup.string()
-	//   .min(3)
-	//   .max(50)
-	//   .required("Please enter your name"),
-	// MobileNo: Yup.string()
-	//   .min(10)
-	//   .max(10)
-	//   .matches(phoneRegExp, "Phone number is not valid")
-	//   .required("Mobile number is must be 10 digits"),
-	// Address: Yup.string().required(),
+	Name: Yup.string().min(3).max(50).required('Please enter your name'),
+	MobileNo: Yup.string()
+		.min(10)
+		.max(10)
+		.matches(phoneRegExp, 'Phone number is not valid')
+		.required('Mobile number is must be 10 digits'),
+	Address: Yup.string().required(),
 	GivenAmount: Yup.number().positive().integer().required('Please Enter the amount to give'),
 
-	collectionPeriod: Yup.number(),
-	// .positive()
-	// .integer()
-	// .required("Please Enter the Collection period")
+	collectionPeriod: Yup.number().positive().integer().required('Please Enter the Collection period'),
 	InterestAmount: Yup.number()
 		.positive()
 		.integer()
@@ -37,7 +30,6 @@ const userSchema = Yup.object().shape({
 
 	InterestPercentage: Yup.number()
 		.positive('Profit percentage must be a number')
-		// .integer("Profit percentage must be a integer")
 		.test('is-percentage', 'profit percentage must be between 0 and 100', (value) => value >= 0 && value <= 100),
 	TotalAmount: Yup.number()
 		.positive()
@@ -45,12 +37,9 @@ const userSchema = Yup.object().shape({
 		.moreThan(Yup.ref('GivenAmount'))
 		.required('Please enter the total amount '),
 
-	CollectionAmount: Yup.number()
-		.positive()
-		// .integer()
-		.required('Please Enter the amount'),
+	CollectionAmount: Yup.number().positive().integer().required('Please Enter the amount'),
 
-	photo: Yup.mixed()
+	Photo: Yup.mixed()
 		.test('fileType', 'Invalid file type, only JPG and PNG are allowed', (value) => {
 			if (!value) return true; // allow empty values
 			const supportedFormats = [ 'image/jpeg', 'image/png' ];
@@ -61,7 +50,7 @@ const userSchema = Yup.object().shape({
 			const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
 			return value.size <= maxFileSize;
 		}),
-	idProof: Yup.mixed()
+	IdProof: Yup.mixed()
 		.test('fileType', 'Invalid file type, only JPG and PDF are allowed', (value) => {
 			if (!value) return true; // allow empty values
 			const supportedFormats = [ 'image/jpeg', 'application/pdf' ];
@@ -74,12 +63,12 @@ const userSchema = Yup.object().shape({
 		})
 		.required('Please upload an ID proof image'),
 
-	collectionDate: Yup.date(),
-	// .typeError("Please enter a valid date")
-	// .required("Please enter a collection date")
+	collectionDate: Yup.date()
+		// .typeError("Please enter a valid date")
+		.required('Please enter a collection date'),
 	collectionEndDate: Yup.date()
-	// .typeError("Please enter a valid date")
-	// .required("Please enter a collection date"),
+		// .typeError("Please enter a valid date")
+		.required('Please enter a collection date')
 });
 
 const initialValues = {
@@ -92,115 +81,72 @@ const initialValues = {
 	InterestPercentage: '',
 	// profitPercentage: "",
 	CollectionAmount: '',
-	idProof: '',
-	photo: '',
+	IdProof: '',
+	Photo: '',
 	collectionDate: '',
 	collectionPeriod: 2,
 	collectionEndDate: ''
 };
 
 const Form = () => {
-//   const { user } = useSelector((state) => state.user);
+	//   const { user } = useSelector((state) => state.user);
 
-  const dispatch=useDispatch()
+	const dispatch = useDispatch();
 	const isNonMobile = useMediaQuery('(min-width:600px)');
 	const [ photoPreview, setPhotoPreview ] = useState();
 	const [ idPreview, setidPreview ] = useState(); // add state to preview uploaded photo
 	const [ Date, setDate ] = useState(); // add state to  collection date
-	const [endDate,setEndDate]=useState(); // add state to  collection date
+	const [ endDate, setEndDate ] = useState(); // add state to  collection date
 
-	const handleFormSubmit = async(values) => {
-const {Photo}= values
+	const handleFormSubmit = async (values) => {
+		const { Photo } = values;
 
-
-		
 		console.log('onn work avbvvvvv mone', values);
 		// values.preventDefault();
 		const data = new FormData();
 		data.append('file', Photo);
-		data.append("upload_preset","wj1inqd");
-		data.append("cloud_name","dzeddutlz")
+		data.append('upload_preset', 'wj1inqd');
+		data.append('cloud_name', 'dzeddutlz');
 
-	
-		
-		await fetch(`https://api.cloudinary.com/v1_1/dqsdim3vv/image/upload`, {
-      method: "POST",
-      body: data,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data, "data");
-        values.Photo = data.url;
-        
-        console.log(values, "Photodeetall");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+		await fetch(`https://api.cloudinary.com/v1_1/dzeddutlz/image/upload`, {
+			method: 'POST',
+			body: data
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				console.log(data, 'data');
+				values.Photo = data.url;
 
-    
-      const IdData = new FormData();
+				console.log(values, 'Photodeetall');
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 
-      IdData.append("file", IdProof);
-      IdData.append("upload_preset", "evqnxnlb");
-      IdData.append("cloud_name", "dqsdim3vv");
-      await fetch(`https://api.cloudinary.com/v1_1/dqsdim3vv/image/upload`, {
-        method: "POST",
-        body: IdData,
-      })
-        .then((res) => res.json())
-        .then((IdData) => {
-          console.log(IdData, "Idddddddata");
-          values.IdProof = IdData.url;
-          
-          console.log(values, "Photodeetaleeel");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      
+		const IdData = new FormData();
+		const { IdProof } = values;
 
-      
-      console.log("onn work ", values);
-      dispatch(addUser(values));
-  };
-	//  const handleDate = (evnt) => {
+		IdData.append('file', IdProof);
+		IdData.append('upload_preset', 'wj1inqd');
+		IdData.append('cloud_name', 'dzeddutlz');
+		await fetch(`https://api.cloudinary.com/v1_1/dzeddutlz/image/upload`, {
+			method: 'POST',
+			body: IdData
+		})
+			.then((res) => res.json())
+			.then((IdData) => {
+				console.log(IdData, 'Idddddddata');
+				values.IdProof = IdData.url;
 
-	// const date = new Date("2000-10-1");
-	// const newDate = addWeeks(date, 10); // Returns a new Date instance.
+				console.log(values, 'Photodeetaleeel');
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 
-	// console.log("newwwd dta",newDate);
-	//  console.log("hello");
-	//  const enddate=values.collectionDate+(values.collectionPeriod*7*24*60*60*1000)
-	//  console.log(enddate,"eeedddddd");
-
-	//  }
-	//  console.log(endDate,"eeedddddd");
-
-	//   // update formik field value
-
-	// }
-
-	// const handleDateChange = (values, setFieldValue) => {
-	//   const endDate = addWeeks(values.collectionDate, values.collectionPeriod);
-	//   setFieldValue('collectionEndDate', endDate);
-	// };
-	// const handleDateChange = (values, setFieldValue) => {
-	//   const { collectionDate, collectionPeriod } = values;
-	//   const isValidDate = moment(collectionDate, "YYYY-MM-DD", true).isValid();
-
-	//   if (isValidDate) {
-	//     const endDate = addWeeks((new Date(collectionDate), collectionPeriod));
-	//     setFieldValue("collectionEndDate", endDate);
-	//   } else {
-	//     // handle invalid date error
-	//   }
-	// };
-
-	// const handleUpload = async () => {
-	//   const form = new FormData();
-	//   form.append("file", file); // use file state in form data
-	// }
+		console.log('onn work ', values);
+		dispatch(addUser(values));
+	};
 
 	const handleDateChange = (values, setFieldValue) => {
 		const { collectionDate, collectionPeriod } = values;
@@ -213,15 +159,6 @@ const {Photo}= values
 			console.log('cvghvsghv');
 			return;
 		}
-
-		// const endDate = addWeeks(collectionDate, collectionPeriod);
-		// const newEndDate= moment(endDate).format('YYYY-MM-DD');
-		// setFieldValue('collectionEndDate', newEndDate);
-		// console.log(newEndDate,"endddddddd");
-
-		// const endDate = addWeeks(collectionDate, collectionPeriod);
-		// setFieldValue('collectionEndDate', endDate);
-		// console.log(endDate,"endddddddd");
 	};
 
 	return (
@@ -356,38 +293,7 @@ const {Photo}= values
 								helperText={touched.CollectionAmount && errors.CollectionAmount}
 								sx={{ gridColumn: 'span 2' }}
 							/>
-							{/* 
-<Field name="collectionDate">
-                {({field})=>(
-
-               <TextField
-               {...field}
-                fullWidth
-                name="collectionDate"
-                variant="filled"
-                type="Date"
-                label="COLLECTION STARTING DATE"
-                Value={Date}
-                onBlur={handleBlur}
-                format="yyyy,MM,dd"
-                
-                // onChange={handleDate}
-                onChange={(event) => {
-                  Formik.setFieldValue("collectionDate", moment(event.target.value).format("yyyy,MM,dd"));
-                  
-                  handleDateChange(
-                    {...values,collectionDate:moment(event.target.value).format("yyyy,MM,dd")},
-                    setFieldValue
-                    );
-                    setDate(event.target.value)
-                  }
-              }
-                error={!!touched.collectionDate && !!errors.collectionDate}
-                helperText={touched.collectionDate && errors.collectionDate} 
-              //  sx={{ gridColumn: "span 2" }} 
-               /> */}
-							{/* )}
-               </Field> */}
+							{/* </Field> */}
 							<Field name="collectionDate">
 								{({ field, form }) => (
 									<TextField
@@ -445,7 +351,7 @@ const {Photo}= values
 							</Field>
 
 							<Field name="collectionEndDate">
-								{({ field ,form}) => (
+								{({ field, form }) => (
 									<TextField
 										{...field}
 										fullWidth
@@ -467,19 +373,8 @@ const {Photo}= values
 											);
 											setEndDate(event.target.value);
 										}}
-										// onChange={field.onChange}
-										// onChange={(event) => {
-										//   setFieldValue("collectionEndDate", event.target.value);
-
-										//   const adWeeks=addWeeks((values.collectionDate,values.CollectionPeriod))
-
-										//   setEndDate(adWeeks)
-
-										// }
-										// }
 										error={!!touched.collectionEndDate && !!errors.collectionEndDate}
 										helperText={touched.collectionEndDate && errors.collectionEndDate}
-										//  sx={{ gridColumn: "span 2" }}
 									/>
 								)}
 							</Field>
@@ -488,22 +383,18 @@ const {Photo}= values
 								{photoPreview ? (
 									<Box component="img" src={photoPreview} sx={{ width: 100, height: 100 }} />
 								) : (
-									<Box
-										component="img"
-										// src="/default-avatar.jpg"
-										sx={{ width: 100, height: 100 }}
-									/>
+									<Box component="img" sx={{ width: 100, height: 100 }} />
 								)}
 
 								<Button variant="contained" component="label" sx={{ mb: 1 }}>
 									Upload Photo
 									<TextField
-										name="photo"
+										name="Photo"
 										type="file"
 										value={values.photoPreview}
 										onChange={(event) => {
 											console.log(event.currentTarget.files[0]); // check if this is being logged
-											setFieldValue('photo', event.currentTarget.files[0]);
+											setFieldValue('Photo', event.currentTarget.files[0]);
 
 											const file = event.target.files[0];
 
@@ -516,11 +407,11 @@ const {Photo}= values
 											};
 										}}
 										inputProps={{ accept: 'image/jpeg,image/png' }}
-										helperText={touched.photo && errors.photo}
-										error={touched.photo && Boolean(errors.photo)}
+										helperText={touched.Photo && errors.Photo}
+										error={touched.Photo && Boolean(errors.Photo)}
 									/>
 								</Button>
-								{touched.photo && errors.photo && <Box sx={{ color: 'red' }}>{errors.photo}</Box>}
+								{touched.Photo && errors.Photo && <Box sx={{ color: 'red' }}>{errors.Photo}</Box>}
 							</Box>
 
 							<Box display="flex" flexDirection="row" alignItems="center" justifyContent="center">
@@ -537,12 +428,12 @@ const {Photo}= values
 								<Button variant="contained" component="label" sx={{ mb: 1 }}>
 									Upload Photo
 									<TextField
-										name="idProof"
+										name="IdProof"
 										type="file"
 										value={values.photoPreview}
 										onChange={(event) => {
 											console.log(event.currentTarget.files[0]); // check if this is being logged
-											setFieldValue('idProof', event.currentTarget.files[0]);
+											setFieldValue('IdProof', event.currentTarget.files[0]);
 
 											const file = event.target.files[0];
 
@@ -555,11 +446,11 @@ const {Photo}= values
 											};
 										}}
 										inputProps={{ accept: 'image/jpeg,image/png' }}
-										helperText={touched.idProof && errors.idProof}
-										error={touched.idProof && Boolean(errors.idProof)}
+										helperText={touched.IdProof && errors.IdProof}
+										error={touched.IdProof && Boolean(errors.IdProof)}
 									/>
 								</Button>
-								{touched.idProof && errors.idProof && <Box sx={{ color: 'red' }}>{errors.idProof}</Box>}
+								{touched.IdProof && errors.IdProof && <Box sx={{ color: 'red' }}>{errors.IdProof}</Box>}
 							</Box>
 						</Box>
 

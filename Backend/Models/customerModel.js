@@ -53,26 +53,31 @@ const customerSchema = mongoose.Schema({
     },
     collectionEndDate: {
         type: Date,
-        // required: true,
+        required: true,
 
     },
-    IdProof:  [{
-                url: String,
-                file: String,
-
-            }],
-    Photo: [{
+    IdProof: [{
+        type: String,
         url: String,
-        file: String,
-
+        filename: String,
     }],
+    Photo: [
+        {
+            type: String,
+            url: String,
+            filename: String,
+        },
+    ],
     
     Pending:[{
         type:String
     }],
     Collected:[{
         type:String
-    }]
+    }],
+    collectionDate:{
+
+    }
 
    
 }, { Timestamp: true }
