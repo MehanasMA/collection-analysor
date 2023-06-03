@@ -4,7 +4,7 @@ import { ActionTypes } from "../Constants/actionTypes";
 export const addUser = (data) => {
   return async (dispatch) => {
     try {
-      const response = await axios.post('http://localhost:3000/users/addUser', data);
+      const response = await axios.post('http://localhost:5000/users/addUser', data);
       console.log('data action', data);
 
       dispatch({
@@ -21,7 +21,7 @@ export const addUser = (data) => {
 
 export const allUsers =(reqObj) => async dispatch=>{
     try {
-        const response = await axios.get('http://localhost:3000/users/allUsers')
+        const response = await axios.get('http://localhost:5000/users/allUsers')
           
        console.log("response: " , response.data);
 

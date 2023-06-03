@@ -36,6 +36,11 @@ const customerSchema = mongoose.Schema({
         required: true,
 
     },
+    TotalAmountCopy: {
+        type: String,
+        // required: true,
+        ref: 'TotalAmount', // Reference to the TotalAmount field
+    },
     collectionPeriod: {
         type: String,
         required: true,
@@ -69,15 +74,32 @@ const customerSchema = mongoose.Schema({
         },
     ],
     
-    Pending:[{
-        type:String
-    }],
-    Collected:[{
-        type:String
-    }],
+    // Pending:[{
+    //     type:String
+    // }],
+    // Collected:[{
+    //     type:String
+    // }],
+    Pending: [
+        {
+            date: { type: Date, default: Date.now },
+            amount: { type: Number }
+        }
+    ],
+    Collected: [
+        {
+            date: { type: Date, default: Date.now },
+            amount: { type: Number }
+        }
+    ],
     collectionDate:{
 
-    }
+    },
+    TotalAmountHistory: [
+        {
+            type: String,
+        }
+    ],
 
    
 }, { Timestamp: true }
