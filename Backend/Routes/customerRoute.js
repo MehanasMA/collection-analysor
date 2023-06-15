@@ -5,7 +5,8 @@ const userController = require('../Controller/userController')
 
 router.post('/addUser', userController.addUser)
 router.get('/allUsers', userController.allUsers)
+
 router.get('/collectionList', userController.collectionList)
-router.post('/pay/:id', userController.pay)
+router.post('/pay', userController.pay)
 
 module.exports = router

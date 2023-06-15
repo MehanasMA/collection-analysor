@@ -74,34 +74,56 @@ const customerSchema = mongoose.Schema({
         },
     ],
     
-    // Pending:[{
-    //     type:String
-    // }],
-    // Collected:[{
-    //     type:String
-    // }],
+
     Pending: [
         {
             date: { type: Date, default: Date.now },
-            amount: { type: Number }
+            amount: { type: Number },
+            userId:{type:String},
+            state: {
+                type: String,
+                enum: ["Pending", "Collected"],
+                default: "Pending"
+            }
+                    
         }
     ],
     Collected: [
         {
             date: { type: Date, default: Date.now },
-            amount: { type: Number }
+            amount: { type: Number },
+            userId: { type: String },
+
+            state: {
+                type: String,
+                enum: ["Pending", "Collected"],
+                default: "Pending"
+            }
         }
     ],
-    collectionDate:{
-
-    },
     TotalAmountHistory: [
         {
             type: String,
         }
     ],
+    TotalPendingAmount:{
+        type:String
+    },
+    TotalProfit:{
+        type: String
+ 
+    },
+    TotalCollected:{
+        type: String
 
-   
+    },
+    TodayProfit:[{
+       date: { type: Date, default: Date.now },
+       Profit:String
+    }]
+    
+
+
 }, { Timestamp: true }
 );
 
